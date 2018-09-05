@@ -1,4 +1,4 @@
-FROM crosstime1986/php:7.0-fpm
+FROM crosstime1986/php:7.1.2-fpm
 
 RUN docker-php-ext-configure opcache --enable-opcache && \
     docker-php-ext-install opcache
