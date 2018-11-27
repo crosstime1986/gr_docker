@@ -14,7 +14,7 @@ class App:
     def __init__(self, game_args=None):
         """
         构造方法
-        :param GameArgs game_args: 
+        :param GameArgs game_args:
         """
         self.channel_file = '{s.folder_path}/game_{s.site_id}/assets/grConfig.ini'
         self.channel_history_file = '{s.folder_path}/channel_history.txt'
@@ -25,7 +25,7 @@ class App:
         self.old_apk = '{s.folder_path}/game_{s.site_id}/dist/game.apk'
 
         # 反编的路径
-        if game_args.version != '' or game_args.version == None:
+        if game_args.version == '' or game_args.version == None:
             self.demo_decompile_path = '{s.folder_path}/game/'
         else:
             self.demo_decompile_path = '{s.folder_path}/game-%s/' % game_args.version
@@ -47,8 +47,8 @@ class App:
     def sendStatus(self, success=False):
         """
         远程通知 c.gaore.com 打包成功，刷新CDN
-        :param success: 
-        :return: 
+        :param success:
+        :return:
         """
         try:
             url = "http://c.gaore.com/updatepack.php"
@@ -63,7 +63,7 @@ class App:
     def writeInfo(self):
         """
         写入渠道号和广告位号
-        :return: 
+        :return:
         """
         result = False
         with open(self.channel_file, 'w') as fd:
@@ -85,7 +85,7 @@ class App:
     def renameApkFile(self):
         """
         临时包改名
-        :return: 
+        :return:
         """
         if os.path.exists(self.new_temp_apk):
             if os.path.exists(self.new_apk):
@@ -93,30 +93,32 @@ class App:
             os.rename(self.new_temp_apk, self.new_apk)
             self.message('renameFile finish:' + self.new_apk)
         else:
+            self.sendStatus(False)
             print('file not exists')
-
 
     def message(self, msg=''):
         """
         写信息
-        :param msg: 
-        :return: 
+        :param msg:
+        :return:
         """
         print('==%s==' % msg)
 
     def copytree(self):
         """
         复制反编目录，如果目标目录存在那，等于在打包中，相等于锁的机制
-        :return: 
+        :return:
         """
         if not os.path.exists(self.target_decompile_path):
             if os.path.exists(self.demo_decompile_path):
                 shutil.copytree(self.demo_decompile_path, self.target_decompile_path)
             else:
                 print('demo directory is noe exists!!')
+                self.sendStatus(False)
                 exit(-1)
         else:
             print('compile directory is exists!!')
+            self.sendStatus(False)
             exit(-1)
 
     def removetree(self):
@@ -126,7 +128,7 @@ class App:
     def run(self):
         """
         开始打包
-        :return: 
+        :return:
         """
         self.copytree()
         self.writeInfo()
